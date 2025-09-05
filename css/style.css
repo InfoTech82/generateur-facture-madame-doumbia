@@ -1,0 +1,403 @@
+/* Variables et configuration */
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #1e40af;
+    --accent-color: #3b82f6;
+    --text-color: #1f2937;
+    --transition-speed: 0.3s;
+    --gradient-primary: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+    --gradient-secondary: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Animations de base améliorées */
+@keyframes fadeIn {
+    from { 
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from { 
+        transform: translateY(30px);
+        opacity: 0;
+        filter: blur(5px);
+    }
+    to { 
+        transform: translateY(0);
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Classes d'animation améliorées */
+.fade-in {
+    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.fade-in-delay {
+    animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
+    opacity: 0;
+}
+
+.slide-in {
+    animation: slideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.scale-in {
+    animation: scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Navigation améliorée */
+.nav-link {
+    position: relative;
+    transition: all var(--transition-speed);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+}
+
+.nav-link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-primary);
+    border-radius: 0.5rem;
+    opacity: 0;
+    transition: opacity var(--transition-speed);
+    z-index: -1;
+}
+
+.nav-link:hover::before,
+.nav-link.active::before {
+    opacity: 0.1;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--gradient-primary);
+    transition: all var(--transition-speed);
+    transform: translateX(-50%);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 80%;
+}
+
+/* Boutons améliorés */
+.btn-primary {
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-speed);
+    background: var(--gradient-primary);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    border-radius: 50%;
+}
+
+.btn-primary:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Cartes de service améliorées */
+.service-card {
+    position: relative;
+    transition: all var(--transition-speed);
+    border-radius: 1rem;
+    overflow: hidden;
+    background: white;
+    box-shadow: var(--shadow-md);
+}
+
+.service-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-primary);
+    opacity: 0;
+    transition: opacity var(--transition-speed);
+    z-index: 0;
+}
+
+.service-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+}
+
+.service-card:hover::before {
+    opacity: 0.05;
+}
+
+/* Formulaire amélioré */
+.form-input {
+    transition: all var(--transition-speed);
+    border: 2px solid transparent;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #f8fafc;
+    box-shadow: var(--shadow-sm);
+}
+
+.form-input:focus {
+    transform: scale(1.02);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    background: white;
+}
+
+/* Effet de parallax amélioré */
+.parallax-bg {
+    transition: transform 0.1s linear;
+    will-change: transform;
+}
+
+/* Animations au scroll améliorées */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Menu mobile amélioré */
+.mobile-menu {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    transition: all var(--transition-speed);
+    transform: translateX(100%);
+    opacity: 0;
+    z-index: 50;
+}
+
+.mobile-menu:not(.hidden) {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+/* Transitions de page améliorées */
+.page-transition {
+    position: fixed;
+    inset: 0;
+    background: var(--gradient-primary);
+    z-index: 9999;
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.page-transition.active {
+    transform: scaleY(1);
+    transform-origin: top;
+}
+
+/* Animations de chargement améliorées */
+.loading {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    animation: loading 1.5s infinite;
+    transform: translateX(-100%);
+}
+
+@keyframes loading {
+    100% { transform: translateX(100%); }
+}
+
+/* Animations de survol pour les icônes améliorées */
+.icon-hover {
+    transition: all var(--transition-speed);
+    transform-origin: center;
+}
+
+.icon-hover:hover {
+    transform: scale(1.1) rotate(5deg);
+    color: var(--primary-color);
+}
+
+/* Animations pour les listes améliorées */
+.list-item {
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.list-item.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Animation pour les images améliorée */
+.img-hover {
+    transition: all var(--transition-speed);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+.img-hover:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Animation pour les titres améliorée */
+.title-animate {
+    position: relative;
+    display: inline-block;
+}
+
+.title-animate::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--gradient-primary);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.title-animate:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+}
+
+/* Effets de glassmorphisme */
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+/* Effets de hover sur les cartes */
+.hover-card {
+    transition: all var(--transition-speed);
+}
+
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Effets de texte */
+.text-gradient {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Responsive amélioré */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+    
+    .mobile-menu {
+        display: block;
+    }
+
+    .service-card:hover {
+        transform: translateY(-5px);
+    }
+}
+
+/* Animations de scroll personnalisées */
+.scroll-fade {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-fade.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Effets de survol sur les liens */
+.link-hover {
+    position: relative;
+    transition: color var(--transition-speed);
+}
+
+.link-hover::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--transition-speed);
+}
+
+.link-hover:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+} 

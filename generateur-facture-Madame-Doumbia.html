@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Créer une Facture - Entreprise Avicole</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
+  <script src="https://unpkg.com/html2canvas@latest/dist/html2canvas.min.js"></script>
+  <style>
+    body { font-family: 'Outfit', sans-serif; }
+    .invoice-container { background: white; }
+    .section-card { background: white; border: 1px solid #f3e8ff; }
+    .total-section { background: #fef3c7; border-left: 4px solid #d97706; }
+    .cachet-stamp { position: absolute; top: -2.5rem; left: 33%; transform: translate(-50%, -50%) rotate(-12deg); width: 8rem; height: 8rem; opacity: 0.85; pointer-events: none; }
+    .invoice-header { background: linear-gradient(135deg, #92400e 0%, #b45309 100%); }
+    .invoice-number { background: #d97706; }
+    .poultry-pattern { 
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23fef3c7' fill-opacity='0.3'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .product-category { background: #fef3c7; border: 1px solid #f59e0b; }
+  </style>
+</head>
+<body class="bg-amber-50 min-h-screen p-3 poultry-pattern">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-6">
+      <h1 class="text-3xl font-bold text-amber-800 mb-2">🏠 Chez Madame Doumbia</h1>
+      <p class="text-amber-700 text-lg">Poulets • Œufs • Abats • Volailles</p>
+      <h2 class="text-xl font-semibold text-amber-700 mt-4">Créer une Facture</h2>
+    </div>
+    
+    <form id="factureForm" class="space-y-6" autocomplete="off">
+      <!-- Infos société -->
+      <div class="section-card p-4 rounded-lg shadow-md">
+        <h2 class="text-base font-semibold text-amber-800 mb-3 flex items-center">
+          <span class="mr-2">🏢</span> Informations de l'entreprise
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input type="text" name="societe_nom" placeholder="Nom de l'entreprise" class="border border-amber-200 p-2 rounded w-full focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value="Chez Madame Doumbia" required>
+          <input type="text" name="societe_adresse" placeholder="Adresse" class="border border-amber-200 p-2 rounded w-full focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value="Rue 251 Porte 96" required>
+          <input type="text" name="societe_ville" placeholder="Ville" class="border border-amber-200 p-2 rounded w-full focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value="Bamako, Mali" required>
+          <input type="text" name="societe_tel" placeholder="Téléphone" class="border border-amber-200 p-2 rounded w-full focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value="+223 66 79 01 25 / +223 73 49 09 25" required>
+          <input type="text" name="societe_rccm" placeholder="RCCM" class="border border-amber-200 p-2 rounded w-full focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value="MA.BKO.2025.A.444B" required>
+          <input type="text" name="societe_nina" placeholder="NINA" class="border border-amber-200 p-2 rounded w-full focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value="325091912230600N" required>
+        </div>
+      </div>
+      
+      <!-- Client -->
+      <div class="section-card p-4 rounded-lg shadow-md">
+        <h2 class="text-base font-semibold text-amber-800 mb-3 flex items-center">
+          <span class="mr-2">👤</span> Informations du client
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input type="text" name="client_nom" placeholder="Nom du client" class="border border-amber-200 p-2 rounded w-full focus:ring-2 focus:ring-amber-500 focus:border-amber-500" required>
+          <input type="text" name="client_tel" placeholder="Téléphone du client" class="border border-amber-200 p-2 rounded w-full focus:ring-2 focus:ring-amber-500 focus:border-amber-500" required>
+          <input type="text" name="client_adresse" placeholder="Adresse du client" class="border border-amber-200 p-2 rounded w-full focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+        </div>
+      </div>
+      
+      <!-- Détails facture -->
+      <div class="section-card p-4 rounded-lg shadow-md">
+        <h2 class="text-base font-semibold text-amber-800 mb-3 flex items-center">
+          <span class="mr-2">📋</span> Détails de la facture
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input type="text" name="facture_num" placeholder="Numéro de facture" class="border border-amber-200 p-2 rounded w-full focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value="AVI-2025-002" required>
+          <input type="date" name="date" class="border border-amber-200 p-2 rounded w-full focus:ring-2 focus:ring-amber-500 focus:border-amber-500" required>
+          <input type="text" name="mode_paiement" placeholder="Mode de paiement" class="border border-amber-200 p-2 rounded w-full focus:ring-2 focus:ring-amber-500 focus:border-amber-500" value="Espèces / Mobile Money / Virement bancaire" required>
+        </div>
+      </div>
+      
+      <!-- Produits -->
+      <div class="section-card p-4 rounded-lg shadow-md">
+        <h2 class="text-base font-semibold text-amber-800 mb-3 flex items-center">
+          <span class="mr-2">🥚</span> Produits avicoles
+        </h2>
+        
+        <!-- Catégories de produits -->
+        <div class="mb-4 p-3 product-category rounded-lg">
+          <p class="text-sm text-amber-800 font-medium mb-2">Catégories disponibles :</p>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <!-- <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded">Poulets vivants</span> -->
+            <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded">Poulets abattus</span>
+            <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded">Œufs frais</span>
+            <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded">Abats</span>
+            <!-- <span class="bg-amber-100 text-amber-800 px-2 py-1 rounded">Volailles</span> -->
+          </div>
+        </div>
+        
+        <table class="w-full mb-2" id="produitsTable">
+          <thead>
+            <tr class="bg-amber-50">
+              <th class="px-2 py-1 text-xs font-semibold text-amber-700">Désignation</th>
+              <th class="px-2 py-1 text-xs font-semibold text-amber-700">Quantité</th>
+              <th class="px-2 py-1 text-xs font-semibold text-amber-700">Poids (kg)</th>
+              <th class="px-2 py-1 text-xs font-semibold text-amber-700">Prix Unitaire (FCFA/kg)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="produitsBody">
+            <tr>
+              <td><input type="text" name="designation[]" placeholder="Ex: Poulet abattu" class="border border-amber-200 p-1 rounded w-full focus:ring-1 focus:ring-amber-500" required></td>
+              <td><input type="number" name="quantite[]" class="border border-amber-200 p-1 rounded w-full focus:ring-1 focus:ring-amber-500" min="1" value="1" required></td>
+              <td><input type="number" name="poids[]" placeholder="0.0" step="0.1" min="0" class="border border-amber-200 p-1 rounded w-full focus:ring-1 focus:ring-amber-500" required></td>
+              <td><input type="number" name="prix[]" placeholder="Prix par kg" class="border border-amber-200 p-1 rounded w-full focus:ring-1 focus:ring-amber-500" min="0" value="0" required></td>
+              <td><button type="button" onclick="removeRow(this)" class="text-red-500 hover:text-red-700">🗑️</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button type="button" onclick="addRow()" class="bg-amber-600 text-white px-3 py-1 rounded hover:bg-amber-700 transition-colors">➕ Ajouter un produit</button>
+      </div>
+      
+      <!-- Signatures -->
+      <div class="section-card p-4 rounded-lg grid grid-cols-1 sm:grid-cols-2 gap-4 shadow-md">
+        <div>
+          <label class="block font-semibold text-amber-800 text-sm mb-2">Signature Vendeur</label>
+          <div class="border border-amber-200 p-2 rounded bg-amber-50 flex items-center justify-center">
+            <img src="assets/signature.png" alt="Signature Vendeur" style="height: 120px; width: 240px; object-fit:contain;">
+          </div>
+        </div>
+        <div>
+          <label class="block font-semibold text-amber-800 text-sm mb-2">Cachet de l'entreprise</label>
+          <div class="border border-amber-200 p-2 rounded bg-amber-50 flex items-center justify-center">
+            <img src="assets/cachetMmeDoumbia.png" alt="Cachet Techma" style="height: 120px; width:120px; object-fit:contain;">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Générer -->
+      <div class="text-right">
+        <button type="submit" class="bg-amber-600 text-white px-5 py-2 rounded-lg shadow-lg hover:bg-amber-700 transition-all duration-300 flex items-center mx-auto">
+          <span class="mr-2">📄</span> Générer la facture
+        </button>
+      </div>
+      
+      <!-- Message de confirmation -->
+      <div id="confirmationMessage" class="hidden text-center p-4 bg-green-50 border border-green-200 rounded-lg">
+        <p class="text-green-700 font-medium">✅ Facture générée avec succès ! Le modal s'ouvre automatiquement.</p>
+      </div>
+    </form>
+    
+    <!-- Modal pour la facture générée -->
+    <div id="factureModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+      <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-screen overflow-y-auto">
+          <!-- En-tête du modal -->
+          <div class="sticky top-0 bg-amber-600 text-white p-4 rounded-t-xl flex justify-between items-center">
+            <h3 class="text-xl font-bold">📄 Facture Générée</h3>
+            <button onclick="closeFactureModal()" class="text-white hover:text-amber-200 text-2xl font-bold">
+              ✕
+            </button>
+          </div>
+          
+          <!-- Contenu du modal -->
+          <div class="p-6">
+            <div id="factureResult"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Ajout/Suppression de lignes produits
+    function addRow() {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="text" name="designation[]" placeholder="Ex: Poulet abattu" class="border border-amber-200 p-1 rounded w-full focus:ring-1 focus:ring-amber-500" required></td>
+        <td><input type="number" name="quantite[]" class="border border-amber-200 p-1 rounded w-full focus:ring-1 focus:ring-amber-500" min="1" value="1" required></td>
+        <td><input type="number" name="poids[]" placeholder="0.0" step="0.1" min="0" class="border border-amber-200 p-1 rounded w-full focus:ring-1 focus:ring-amber-500" required></td>
+        <td><input type="number" name="prix[]" placeholder="Prix par kg" class="border border-amber-200 p-1 rounded w-full focus:ring-1 focus:ring-amber-500" min="0" value="0" required></td>
+        <td><button type="button" onclick="removeRow(this)" class="text-red-500 hover:text-red-700">🗑️</button></td>
+      `;
+      document.getElementById('produitsBody').appendChild(tr);
+    }
+    function removeRow(btn) {
+      btn.closest('tr').remove();
+    }
+
+    // Fonction supprimée - signature intégrée directement
+
+    // Génération de la facture à partir du formulaire
+    document.getElementById('factureForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const data = new FormData(this);
+
+      // Récupération des données société
+      const societe_nom = data.get('societe_nom');
+      const societe_adresse = data.get('societe_adresse');
+      const societe_ville = data.get('societe_ville');
+      const societe_tel = data.get('societe_tel');
+      const societe_rccm = data.get('societe_rccm');
+      const societe_nina = data.get('societe_nina');
+
+      // Client
+      const client_nom = data.get('client_nom');
+      const client_tel = data.get('client_tel');
+      const client_adresse = data.get('client_adresse');
+
+      // Facture
+      const facture_num = data.get('facture_num');
+      const date = data.get('date');
+      const mode_paiement = data.get('mode_paiement');
+
+      // Produits
+      const designations = data.getAll('designation[]');
+      const quantites = data.getAll('quantite[]');
+      const poids = data.getAll('poids[]');
+      const prix = data.getAll('prix[]');
+
+      // Signatures - Utilisation directe de l'image intégrée
+      const signatureVendeurUrl = 'assets/signature.png';
+
+      // Générer la facture avec l'image de signature intégrée
+      // Calcul total
+      let total = 0;
+      let rows = '';
+      for(let i=0; i<designations.length; i++) {
+        const q = parseInt(quantites[i]);
+        const p = parseInt(prix[i]);
+        const poids_kg = parseFloat(poids[i]) || 0;
+        const t = poids_kg * p; // Prix total = Poids × Prix unitaire
+        total += t;
+        rows += `
+          <tr>
+            <td class='px-4 py-3 text-sm text-amber-700'>${designations[i]}</td>
+            <td class='px-4 py-3 text-sm text-center text-amber-700'>${q}</td>
+            <td class='px-4 py-3 text-sm text-center text-amber-700'>${poids_kg} kg</td>
+            <td class='px-4 py-3 text-sm text-right text-amber-700'>${p.toLocaleString()} FCFA/kg</td>
+            <td class='px-4 py-3 text-sm text-right font-medium text-amber-900'>${t.toLocaleString()} FCFA</td>
+          </tr>
+        `;
+      }
+      // Facture HTML
+      document.getElementById('factureResult').innerHTML = `
+      <div class="mb-6 text-center">
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <h3 class="text-lg font-semibold text-amber-800 mb-3">📄 Facture Prête</h3>
+          <p class="text-amber-700 mb-4">Votre facture a été générée avec succès. Vous pouvez maintenant la télécharger directement au format PDF.</p>
+          <div class="flex gap-3 justify-center">
+            <button onclick="downloadPDF()" class="bg-amber-600 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-amber-700 transition-all duration-300 flex items-center text-lg font-medium">
+              <span class="mr-2">⬇️</span> Télécharger la Facture PDF
+            </button>
+            <button onclick="closeFactureModal()" class="bg-gray-500 text-white px-6 py-3 rounded-lg shadow-lg hover:bg-gray-600 transition-all duration-300 flex items-center text-lg font-medium">
+              <span class="mr-2">✕</span> Fermer
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="factureGeneree" class='w-full invoice-container rounded-xl shadow-2xl overflow-hidden mt-8 relative'>
+        <div class='invoice-header text-white p-6 pb-16'>
+          <div class='flex justify-between items-start'>
+            <div>
+              <h1 class='text-2xl font-bold mb-3'>${societe_nom}</h1>
+              <div class='space-y-1 text-amber-200'>
+                <p>${societe_adresse}</p>
+                <p>${societe_ville}</p>
+                <p>${societe_tel}</p>
+              </div>
+              <div class='mt-2 bg-gray-100 rounded-md px-3 py-2 flex flex-col sm:flex-row gap-2 sm:gap-6 w-fit text-gray-700 text-sm border border-gray-200'>
+                <div class='flex items-center gap-1'>
+                  <span class='text-base'>🗂️</span>
+                  <span class='font-semibold'>RCCM :</span>
+                  <span>${societe_rccm}</span>
+                </div>
+                <div class='flex items-center gap-1'>
+                </div>
+              </div>
+            </div>
+            <div class='text-right'>
+              <img src='assets/madamedoumbia.jpg' alt='Logo Madame Doumbia' style='height:120px; width:auto; object-fit:contain; border-radius:50%;' class='inline-block mb-4'>
+              
+            </div>
+          </div>
+        </div>
+        <div class='p-5 -mt-6'>
+          <div class='grid grid-cols-2 gap-4 mb-6'>
+            <div class='section-card p-4 rounded-lg'>
+              <h2 class='text-base font-semibold text-amber-800 mb-3'>Client</h2>
+              <div class='space-y-1'>
+                <p class='font-medium text-amber-900'>${client_nom}</p>
+                <p class='text-sm text-amber-600'>${client_adresse ? client_adresse + '<br>' : ''}${client_tel}</p>
+              </div>
+            </div>
+            <div class='section-card p-4 rounded-lg'>
+              <h2 class='text-base font-semibold text-amber-800 mb-3'>Détails de la facture</h2>
+              <div class='space-y-1'>
+                <p class='text-sm text-amber-600'><span class='font-medium text-amber-800'>Date d\'émission:</span> ${date}</p>
+                <p class='text-sm text-amber-600'><span class='font-medium text-amber-800'>Mode de paiement:</span> ${mode_paiement}</p>
+              </div>
+            </div>
+          </div>
+          <div class='mb-6'>
+            <h2 class='text-base font-semibold text-amber-800 mb-3'>Détails de la vente</h2>
+            <div class='section-card rounded-lg overflow-hidden'>
+              <table class='w-full'>
+                <thead>
+                  <tr class='bg-amber-50'>
+                    <th class='px-4 py-3 text-left text-xs font-semibold text-amber-600'>Désignation</th>
+                    <th class='px-4 py-3 text-center text-xs font-semibold text-amber-600'>Quantité</th>
+                    <th class='px-4 py-3 text-center text-xs font-semibold text-amber-600'>Poids (kg)</th>
+                    <th class='px-4 py-3 text-right text-xs font-semibold text-amber-600'>Prix Unitaire (FCFA/kg)</th>
+                    <th class='px-3 text-right text-xs font-semibold text-amber-600'>Total (FCFA)</th>
+                  </tr>
+                </thead>
+                <tbody class='divide-y divide-slate-200'>
+                  ${rows}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class='flex justify-end mb-6'>
+            <div class='w-1/3'>
+              <div class='total-section p-4 rounded-lg'>
+                <div class='flex justify-between mb-2'>
+                  <span class='text-sm text-amber-600'>Sous-total</span>
+                  <span class='text-sm text-amber-700'>${total.toLocaleString()} FCFA</span>
+                </div>
+                <div class='flex justify-between text-base font-bold text-amber-600 pt-2 border-t border-slate-200'>
+                  <span>Total TTC</span>
+                  <span>${total.toLocaleString()} FCFA</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class='grid grid-cols-2 gap-4 mt-6'>
+            <div class='section-card p-4 rounded-lg'>
+              <p class='font-semibold text-amber-800 text-sm mb-2'>Signature Vendeur</p>
+              <div id='signature-vendeur-container'>
+                <div class='border-t-2 border-slate-200 pt-1'>
+                  ${signatureVendeurUrl ? `<img src='${signatureVendeurUrl}' alt='Signature Vendeur' style='height:120px; display:block;' />` : ''}
+                </div>
+              </div>
+            </div>
+            <div class='section-card p-4 rounded-lg'>
+              <p class='font-semibold text-amber-800 text-sm mb-2'>Cachet de l'entreprise</p>
+              <div class='border-t-2 border-slate-200 pt-1 flex items-center justify-center'>
+                <img src='assets/cachetMmeDoumbia.png' alt='Cachet Techma' style='height:120px; width:240px; object-fit:contain;'>
+              </div>
+            </div>
+          </div>
+          <div class='mt-4 text-center relative'>
+            <div class='cachet-stamp'>
+              <img src='assets/cachetMmeDoumbia.png' alt='Cachet Techma' class='w-full h-full object-contain'>
+            </div>
+          </div>
+          <div class='mt-6 pt-4 border-t border-slate-200'>
+            <div class='text-center'>
+              <p class='font-medium text-amber-800 text-sm'>Merci pour votre confiance !</p>
+              <p class='mt-1 text-sm text-amber-600'>Pour toute question ou service après-vente, n'hésitez pas à nous contacter.</p>
+              <p class='mt-2 text-xs text-amber-500'>Techma Corporation - Votre partenaire technologique de confiance</p>
+            </div>
+          </div>
+        </div>
+      </div>
+          `;
+          
+      // Afficher le message de confirmation
+      document.getElementById('confirmationMessage').classList.remove('hidden');
+      
+      // Ouvrir automatiquement le modal après génération
+      openFactureModal();
+    });
+
+    function downloadPDF() {
+      if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') {
+        alert('Erreur : librairies non chargées.');
+        return;
+      }
+
+      const element = document.getElementById('factureGeneree');
+      if (!element) {
+        alert('Aucune facture à télécharger.');
+        return;
+      }
+
+      const clientNom = document.querySelector('input[name="client_nom"]').value || 'client';
+      const factureNum = document.querySelector('input[name="facture_num"]').value || 'facture';
+      const date = document.querySelector('input[name="date"]').value || new Date().toISOString().split('T')[0];
+      const cleanClientName = clientNom.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 20);
+      const filename = `facture_${factureNum}_${cleanClientName}_${date}.pdf`;
+
+      const downloadBtn = document.querySelector('button[onclick="downloadPDF()"]');
+      const originalText = downloadBtn.innerHTML;
+      downloadBtn.innerHTML = '⏳ Génération en cours...';
+      downloadBtn.disabled = true;
+
+      const originalCachet = element.querySelector('.cachet-stamp');
+      const wasCachetVisible = originalCachet && originalCachet.style.display !== 'none';
+      if (originalCachet) originalCachet.style.display = 'none';
+
+      html2canvas(element, {
+        scale: 1.5,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#ffffff'
+      })
+        .then(canvas => {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF('p', 'mm', 'a4');
+
+          const imgWidth = 190;
+          const pageHeight = 277;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+          let position = 0;
+
+          const imgData = canvas.toDataURL('image/jpeg', 1.0);
+          pdf.addImage(imgData, 'JPEG', 10, 10, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+
+          while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 10, position + 10, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+          }
+
+          pdf.save(filename);
+
+          if (originalCachet && wasCachetVisible) originalCachet.style.display = '';
+
+          downloadBtn.innerHTML = originalText;
+          downloadBtn.disabled = false;
+
+          showNotification('✅ Facture téléchargée avec succès !', 'success');
+        })
+        .catch(error => {
+          console.error('Erreur lors de la génération PDF:', error);
+          if (originalCachet && wasCachetVisible) originalCachet.style.display = '';
+          downloadBtn.innerHTML = originalText;
+          downloadBtn.disabled = false;
+          showNotification('❌ Erreur lors de la génération du PDF.', 'error');
+        });
+    }
+
+    // Fonction pour afficher les notifications
+    function showNotification(message, type = 'info') {
+      // Supprimer les notifications existantes
+      const existingNotifications = document.querySelectorAll('.notification');
+      existingNotifications.forEach(notif => notif.remove());
+
+      // Créer la notification
+      const notification = document.createElement('div');
+      notification.className = `notification fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm transition-all duration-300 ${
+        type === 'success' ? 'bg-green-500 text-white' : 
+        type === 'error' ? 'bg-red-500 text-white' : 
+        'bg-blue-500 text-white'
+      }`;
+      notification.innerHTML = `
+        <div class="flex items-center">
+          <span class="mr-2">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+          <span>${message}</span>
+        </div>
+      `;
+
+      // Ajouter au DOM
+      document.body.appendChild(notification);
+
+      // Auto-suppression après 4 secondes
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => notification.remove(), 300);
+      }, 4000);
+    }
+
+    // Fonctions pour gérer le modal
+    function openFactureModal() {
+      document.getElementById('factureModal').classList.remove('hidden');
+      document.body.style.overflow = 'hidden'; // Empêcher le scroll de la page
+    }
+
+    function closeFactureModal() {
+      document.getElementById('factureModal').classList.add('hidden');
+      document.body.style.overflow = ''; // Restaurer le scroll de la page
+      
+      // Masquer le message de confirmation
+      document.getElementById('confirmationMessage').classList.add('hidden');
+    }
+
+    // Fermer le modal en cliquant à l'extérieur
+    document.addEventListener('DOMContentLoaded', function() {
+      const modal = document.getElementById('factureModal');
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+          closeFactureModal();
+        }
+      });
+
+      // Fermer le modal avec la touche Escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+          closeFactureModal();
+        }
+      });
+    });
+  </script>
+</body>
+</html> 
