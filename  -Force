@@ -1,0 +1,3 @@
+[33meca9a42[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Fix: Format de facture cohérent sur mobile et desktop - Ajout de CSS fixes pour la génération PDF - Amélioration de la qualité d'image et dimensions A4 - Format identique peu importe l'appareil utilisé
+[33md0d53d9[m Rename main file to index.html for GitHub Pages compatibility
+[33m603a1cb[m Initial commit: Générateur de facture pour Chez Madame Doumbia

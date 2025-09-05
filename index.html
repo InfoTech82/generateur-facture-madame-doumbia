@@ -4,6 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Créer une Facture - Entreprise Avicole</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="description" content="Générateur de factures professionnel pour l'entreprise avicole Chez Madame Doumbia">
+  <meta name="theme-color" content="#92400e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Factures Doumbia">
+  <meta name="msapplication-TileColor" content="#92400e">
+  <meta name="msapplication-tap-highlight" content="no">
+  
+  <!-- Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16x16.png">
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js"></script>
@@ -601,6 +618,48 @@
           closeFactureModal();
         }
       });
+    });
+
+    // Enregistrement du Service Worker pour la PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('sw.js')
+          .then(function(registration) {
+            console.log('ServiceWorker enregistré avec succès:', registration.scope);
+          })
+          .catch(function(error) {
+            console.log('Échec de l\'enregistrement du ServiceWorker:', error);
+          });
+      });
+    }
+
+    // Gestion de l'installation PWA
+    let deferredPrompt;
+    const installButton = document.createElement('button');
+    installButton.innerHTML = '📱 Installer l\'app';
+    installButton.className = 'fixed bottom-4 right-4 bg-amber-600 text-white px-4 py-2 rounded-lg shadow-lg hover:bg-amber-700 transition-all duration-300 z-50 hidden';
+    installButton.id = 'installButton';
+    document.body.appendChild(installButton);
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installButton.classList.remove('hidden');
+    });
+
+    installButton.addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`Résultat de l'installation: ${outcome}`);
+        deferredPrompt = null;
+        installButton.classList.add('hidden');
+      }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      console.log('PWA installée avec succès');
+      installButton.classList.add('hidden');
     });
   </script>
 </body>
